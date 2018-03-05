@@ -1,0 +1,143 @@
+---
+title: "Stock Prediction using Headline"
+author: "Techtive"
+date: "5 March 2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Headlines data
+
+Headlines and categories for 400k news items scraped from the web in 2014. Columns are:
+
+* ID : the numeric ID of the article
+* TITLE : the headline of the article
+* URL : the URL of the article
+* PUBLISHER : the publisher of the article
+* CATEGORY : the category of the news item; one of:
+  -- b : business
+  -- t : science and technology
+  -- e : entertainment
+  -- m : health
+* STORY : alphanumeric ID of the news story that the article discusses
+* HOSTNAME : hostname where the article was posted
+* TIMESTAMP : approximate timestamp of the article's publication, given in Unix time (seconds since midnight on Jan 1, 1970)
+
+```{r}
+# remove all the variables in the environment
+rm(list=ls())
+
+data<-read.csv("uci-news-aggregator.csv",fill=T, sep=",", stringsAsFactors = FALSE)
+dim(data)
+names(data)
+attach(data)
+#
+head(ID,5)
+head(TITLE,5)
+head(URL,5)
+head(PUBLISHER,5)
+head(CATEGORY,5)
+head(STORY,5)
+head(HOSTNAME,5)
+head(TIMESTAMP,5)
+```
+
+There are **422419** obervations in this dataset.
+
+# Time
+
+The time of news range from **2014-03-10 16:52:50 GMT** to  **2014-08-28 12:33:11 GMT**.
+
+```{r}
+mytime <- as.POSIXct(TIMESTAMP/1000, origin="1970-01-01", tz = "GMT")
+range(mytime)
+```
+
+# Category
+
+There are:
+
+* 152746 news of business category 
+* 108465 news of science and technology category 
+* 115920 news of business category 
+* 45615 news of health category 
+
+```{r}
+table(CATEGORY)
+# Freq plot
+barplot(prop.table(table(CATEGORY)))
+```
+
+# Story
+
+There are:
+
+* 2076 clusters of similar news for entertainment category 
+* 1789 clusters of similar news for science and technology category 
+* 2019 clusters of similar news for business category 
+* 1347 clusters of similar news for health category 
+
+```{r}
+# Business
+story_b = STORY[CATEGORY == "b"]
+tsb <- as.data.frame(table(story_b))
+dim(tsb)
+# entertainment
+story_e = STORY[CATEGORY == "e"]
+tse <- as.data.frame(table(story_e))
+dim(tse)
+# health
+story_m = STORY[CATEGORY == "m"]
+tsm <- as.data.frame(table(story_m))
+dim(tsm)
+# science and technology
+story_t = STORY[CATEGORY == "t"]
+tst <- as.data.frame(table(story_t))
+dim(tst)
+```
+
+#  Dow Jones Industrial Average (DJIA)
+
+We collect the DJIA data from **2008-08-08** to  **2016-07-01**.
+
+```{R}
+DJIA<-read.csv("DJIA_table.csv",fill=T, sep=",", stringsAsFactors = FALSE)
+dim(DJIA)
+names(DJIA)
+attach(DJIA)
+```
+
+# Date
+
+```{r}
+class(Date)
+range(Date)
+```
+
+# Close Price
+
+```{r}
+# Close Price
+summary(Close)
+# Log Close Price
+log_Close <- log(Close)
+summary(log_Close)
+# Log Return
+log_Return<-diff(log_Close, differences = 1)
+summary(log_Return)
+
+ # Histogram 
+hist(Close, freq=F, main="Close Price (DJIA) Histogram", col=c(2,3), xlab="Close Price")
+hist(log_Close, freq=F, main="Log of Close Price (DJIA) Histogram", col=c(2,3), xlab="log(Close Price)")
+hist(log_Return, freq=F, main="Log of Return (DJIA) Histogram", col=c(2,3), xlab="log(Return)")
+# 
+plot(as.Date(Date), Close, type = "l", xlab = "Date", ylab = "Close Price")
+plot(as.Date(Date), log_Close, type = "l", xlab = "Date", ylab = "log(Close Price)")
+plot(as.Date(Date[-1]), log_Return, type = "l", xlab = "Date", ylab = "log(Return)")
+```

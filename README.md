@@ -19,6 +19,8 @@ price trend forecasting when using news headlines and different firms show diffe
 indicating that different investor groups exist in different firms and special news released during that
 time period.
 
+**Details can be found in our report `Text Driven Stock Market Prediction Based on Machine Learning Methods -V2.1.pdf.pdf`.**
+
 # Acknowledgement
 
 We highly refer to another repository [EmielStoelinga/CCMLWI](https://github.com/EmielStoelinga/CCMLWI)
